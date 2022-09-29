@@ -440,9 +440,9 @@
                 "extensionName": "SetUpADFS"
             }
         ],
-        "caServer": [
+        "adcsServer": [
             {
-                "tag": "ca",
+                "tag": "adcs",
                 "vmName": "ADCS01",
                 "os": "windows",
                 "subnetref": "[variables('subnetRef')]",
@@ -456,7 +456,7 @@
         ],
 
         // Additional Variables
-        "allServers": "[concat(variables('domainController'), variables('adfsServer'), variables('caServer'))]",
+        "allServers": "[concat(variables('domainController'), variables('adfsServer'), variables('adcsServer'))]",
         "domainNameArray": "[split(parameters('domainFQDN'),'.')]",
         "workstationsOUPath": "[concat('OU=Workstations; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
         "serversOUPath": "[concat('OU=Servers; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
@@ -810,12 +810,12 @@
             }
         },
         {
-            "name": "[concat(variables('caServer')[0].vmName, '/', variables('caServer')[0].extensionName)]",
+            "name": "[concat(variables('adcsServer')[0].vmName, '/', variables('adcsServer')[0].extensionName)]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/', variables('caServer')[0].vmName)]"
+                "[resourceId('Microsoft.Compute/virtualMachines/', variables('adcsServer')[0].vmName)]"
             ],
             "properties": {
                 "publisher": "Microsoft.Compute",
@@ -856,11 +856,11 @@
             }
         },
         {
-            "name": "[concat(variables('caServer')[0].vmName, '-enableTLS')]",
+            "name": "[concat(variables('adcsServer')[0].vmName, '-enableTLS')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('caServer')[0].vmName, variables('caServer')[0].extensionName)]"
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('adcsServer')[0].vmName, variables('adcsServer')[0].extensionName)]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -870,7 +870,7 @@
                 },
                 "parameters": {
                     "vmName":   {
-                        "value": "[variables('caServer')[0].vmName]"
+                        "value": "[variables('adcsServer')[0].vmName]"
                     },
                     "enableTLS12Script": {
                         "value": "[variables('enableTLSScript')]"
@@ -1156,11 +1156,11 @@
             }
         },
         {
-            "name": "JoinCAServer",
+            "name": "JoinADCSServer",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "[concat(variables('caServer')[0].vmName, '-enableTLS')]",
+                "[concat(variables('adcsServer')[0].vmName, '-enableTLS')]",
                 "UpdateVNetDNS"
             ],
             "properties": {
@@ -1171,7 +1171,7 @@
                 },
                 "parameters": {
                     "virtualMachines":   {
-                        "value": "[variables('caServer')]"
+                        "value": "[variables('adcsServer')]"
                     },
                     "joinDomainScript": {
                         "value": "[variables('joinDomainScript')]"
@@ -1330,7 +1330,7 @@
         },
         {
             "condition": "[parameters('enableSysmon')]",
-            "name": "[concat(variables('caServer')[0].vmName, '-installSysmon')]",
+            "name": "[concat(variables('adcsServer')[0].vmName, '-installSysmon')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
@@ -1344,7 +1344,7 @@
                 },
                 "parameters": {
                     "vmName":   {
-                        "value": "[variables('caServer')[0].vmName]"
+                        "value": "[variables('adcsServer')[0].vmName]"
                     },
                     "installSysmonScript": {
                         "value": "[variables('installSysmonScript')]"
