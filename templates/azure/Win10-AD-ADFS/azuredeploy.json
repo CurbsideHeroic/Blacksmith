@@ -836,6 +836,32 @@
             }
         },
         {
+            "name": "[concat(variables('caServer')[0].vmName, '-enableTLS')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('caServer')[0].vmName, variables('caServer')[0].extensionName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('enableTLSTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmName":   {
+                        "value": "[variables('caServer')[0].vmName]"
+                    },
+                    "enableTLS12Script": {
+                        "value": "[variables('enableTLSScript')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
             "name": "CreateADForest",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
