@@ -451,6 +451,7 @@
                 "publisher": "MicrosoftWindowsServer",
                 "offer": "WindowsServer",
                 "sku": "[parameters('windowsServerVersion')]",
+                "version": "[parameters('windowsServerVersion')]",
                 "extensionName": "SetUpCA"
             }
         ],
