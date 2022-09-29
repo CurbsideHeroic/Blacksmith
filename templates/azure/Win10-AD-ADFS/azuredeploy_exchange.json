@@ -121,7 +121,7 @@
         },
         "vmSize": {
             "type": "string",
-            "defaultValue": "Standard_B2s",
+            "defaultValue": "Standard_A4_v2",
             "allowedValues": [
                 "Standard_A2",
                 "Standard_A3",
@@ -280,7 +280,7 @@
         },
         "_artifactsLocation": {
             "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/",
+            "defaultValue": "https://raw.githubusercontent.com/CurbsideHeroic/Blacksmith/master/",
             "metadata": {
                 "description": "The location of resources, such as templates and DSC modules, that the template depends on"
             }
@@ -408,6 +408,10 @@
         "installAADConnectScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/misc/Install-AADConnect.zip', parameters('_artifactsLocationSasToken')))]",
         "enableTLSScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/misc/Enable-TLS12.zip', parameters('_artifactsLocationSasToken')))]",
 
+        // Powershell DSC Scripts for Exchange
+        "exchangeDscModules": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/scripts/Install-Exchange-Modules.ps1', parameters('_artifactsLocationSasToken')))]",
+        "installExchange": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/active-directory/Create-AD.zip', parameters('_artifactsLocationSasToken')))]",
+
         // Virtual Machine Properties
         "domainController": [
             {
@@ -439,9 +443,24 @@
                 "extensionName": "SetUpADFS"
             }
         ],
+        "exchangeServer": [
+            {
+                "tag": "exchange",
+                "vmName": "EXCH01",
+                "os": "windows",
+                "subnetref": "[variables('subnetRef')]",
+                "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),'6')]",
+                "vmSize": "[parameters('vmSize')]",
+                "publisher": "MicrosoftWindowsServer",
+                "offer": "WindowsServer",
+                "sku": "[parameters('windowsServerSKU')]",
+                "version": "[parameters('windowsServerVersion')]",
+                "extensionName": "SetUpExchange"
+            }
+        ],
 
         // Additional Variables
-        "allServers": "[concat(variables('domainController'), variables('adfsServer'))]",
+        "allServers": "[concat(variables('domainController'), variables('adfsServer'), variables('exchangeServer))]",
         "domainNameArray": "[split(parameters('domainFQDN'),'.')]",
         "workstationsOUPath": "[concat('OU=Workstations; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
         "serversOUPath": "[concat('OU=Servers; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
@@ -790,6 +809,26 @@
                 "settings": {
                     "fileUris": "[variables('initialDCADFSScripts')]",
                     "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1',' ','-SetupType ADFS',' ','-PfxCertName',' ',parameters('pfxCertName'),' ','-CertificateType',' ',parameters('certificateType'))]"
+                },
+                "protectedSettings": {}
+            }
+        },
+        {
+            "name": "[concat(variables('exchangeServer')[0].vmName, '/', variables('exchangeServer')[0].extensionName)]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-12-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/', variables('exchangeServer')[0].vmName)]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.8",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": "[variables('initialDCADFSScripts')]",
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1',' ', '-SetupType DC',' ','-PfxCertName',' ',parameters('pfxCertName'),' ','-CertificateType',' ',parameters('certificateType'))]"
                 },
                 "protectedSettings": {}
             }
