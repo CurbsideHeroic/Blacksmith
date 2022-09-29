@@ -3,7 +3,7 @@
 [CmdletBinding()]
 param (
     [Parameter(Mandatory)]
-    [ValidateSet("DC","ADFS")]
+    [ValidateSet("DC","ADFS","ADCS")]
     [string]$SetupType
 
 )
