@@ -281,7 +281,7 @@
         },
         "_artifactsLocation": {
             "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/",
+            "defaultValue": "https://raw.githubusercontent.com/CurbsideHeroic/Blacksmith/master/",
             "metadata": {
                 "description": "The location of resources, such as templates and DSC modules, that the template depends on"
             }
@@ -442,7 +442,7 @@
         ],
         "caServer": [
             {
-                "tag": "caServer",
+                "tag": "ca",
                 "vmName": "CA01",
                 "os": "windows",
                 "subnetref": "[variables('subnetRef')]",
@@ -456,7 +456,7 @@
         ],
 
         // Additional Variables
-        "allServers": "[concat(variables('domainController'), variables('adfsServer'))]",
+        "allServers": "[concat(variables('domainController'), variables('adfsServer'), variables('caServer')]",
         "domainNameArray": "[split(parameters('domainFQDN'),'.')]",
         "workstationsOUPath": "[concat('OU=Workstations; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
         "serversOUPath": "[concat('OU=Servers; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
@@ -1110,6 +1110,48 @@
             }
         },
         {
+            "name": "JoinCAServer",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "[concat(variables('caServer')[0].vmName, '-enableTLS')]",
+                "UpdateVNetDNS"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('joinDomainTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "virtualMachines":   {
+                        "value": "[variables('caServer')]"
+                    },
+                    "joinDomainScript": {
+                        "value": "[variables('joinDomainScript')]"
+                    },
+                    "domainFQDN": {
+                        "value": "[parameters('domainFQDN')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "dcIpAddress": {
+                        "value": "[variables('domainController')[0].ipAddress]"
+                    },
+                    "joinOU": {
+                        "value": "[variables('serversOUPath')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
             "name": "ADFSImportPfxCert",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
@@ -1230,6 +1272,33 @@
                 "parameters": {
                     "vmName":   {
                         "value": "[variables('adfsServer')[0].vmName]"
+                    },
+                    "installSysmonScript": {
+                        "value": "[variables('installSysmonScript')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableSysmon')]",
+            "name": "[concat(variables('caServer')[0].vmName, '-installSysmon')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "InstallADFS"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('sysmonInstallTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmName":   {
+                        "value": "[variables('caServer')[0].vmName]"
                     },
                     "installSysmonScript": {
                         "value": "[variables('installSysmonScript')]"
