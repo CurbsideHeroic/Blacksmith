@@ -452,7 +452,7 @@
                 "offer": "WindowsServer",
                 "sku": "[parameters('windowsServerVersion')]",
                 "version": "[parameters('windowsServerVersion')]",
-                "extensionName": "SetUpCA"
+                "extensionName": "SetUpADCS"
             }
         ],
 
@@ -825,7 +825,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": "[variables('initialDCADFSScripts')]",
-                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1',' ', '-SetupType DC',' ','-PfxCertName',' ',parameters('pfxCertName'),' ','-CertificateType',' ',parameters('certificateType'))]"
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1',' ', '-SetupType ADCS',' ','-PfxCertName',' ',parameters('pfxCertName'),' ','-CertificateType',' ',parameters('certificateType'))]"
                 },
                 "protectedSettings": {}
             }
