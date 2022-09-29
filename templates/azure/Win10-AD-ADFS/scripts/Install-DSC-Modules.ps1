@@ -32,3 +32,7 @@ elseif ($SetupType -eq 'ADFS')
 {
     Install-Module -Name AdfsDsc -RequiredVersion 1.1.0
 }
+elseif ($SetupType -eq 'ADCS')
+{
+    Install-Module -Name ADCSAdministration
+}

@@ -810,6 +810,26 @@
             }
         },
         {
+            "name": "[concat(variables('caServer')[0].vmName, '/', variables('caServer')[0].extensionName)]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-12-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/', variables('caServer')[0].vmName)]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.8",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": "[variables('initialDCADFSScripts')]",
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1',' ', '-SetupType DC',' ','-PfxCertName',' ',parameters('pfxCertName'),' ','-CertificateType',' ',parameters('certificateType'))]"
+                },
+                "protectedSettings": {}
+            }
+        },
+        {
             "name": "[concat(variables('adfsServer')[0].vmName, '-enableTLS')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
