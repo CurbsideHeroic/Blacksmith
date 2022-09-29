@@ -453,7 +453,7 @@
                 "sku": "[parameters('windowsServerVersion')]",
                 "extensionName": "SetUpCA"
             }
-        ]
+        ],
 
         // Additional Variables
         "allServers": "[concat(variables('domainController'), variables('adfsServer'))]",
