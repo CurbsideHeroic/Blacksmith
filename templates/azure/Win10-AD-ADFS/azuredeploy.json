@@ -443,7 +443,7 @@
         "caServer": [
             {
                 "tag": "ca",
-                "vmName": "CA01",
+                "vmName": "ADCS01",
                 "os": "windows",
                 "subnetref": "[variables('subnetRef')]",
                 "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),'6')]",
