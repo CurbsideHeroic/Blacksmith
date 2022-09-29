@@ -456,7 +456,7 @@
         ],
 
         // Additional Variables
-        "allServers": "[concat(variables('domainController'), variables('adfsServer'), variables('caServer')]",
+        "allServers": "[concat(variables('domainController'), variables('adfsServer'), variables('caServer'))]",
         "domainNameArray": "[split(parameters('domainFQDN'),'.')]",
         "workstationsOUPath": "[concat('OU=Workstations; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
         "serversOUPath": "[concat('OU=Servers; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
