@@ -31,6 +31,7 @@ $MXSReleaseDownloadUri = Switch ($MXSRelease) {
     'MXS2016-x64-CU13-KB4488406' { 'https://download.microsoft.com/download/5/9/6/59681DAE-AB62-4854-8DEC-CA25FFEFE3B3/ExchangeServer2016-x64-cu13.iso' }
     'MXS2016-x64-CU12-KB4471392' { 'https://download.microsoft.com/download/2/5/8/258D30CF-CA4C-433A-A618-FB7E6BCC4EEE/ExchangeServer2016-x64-cu12.iso' }
     'MXS2019-x64-CU12-KB5011156' { 'https://download.microsoft.com/download/b/c/7/bc766694-8398-4258-8e1e-ce4ddb9b3f7d/ExchangeServer2019-x64-CU12.ISO' }
+    'MXS2019-x64-CU4-KB5000871'  { 'https://download.microsoft.com/download/2/9/a/29a75e9c-c4bb-4457-8681-77f33dc368e7/Exchange2019-KB5000871-x64-en.msp'}
 }
 
 ################
