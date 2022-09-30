@@ -120,8 +120,9 @@
         },
         "windowsMXServerSKU": {
             "type": "string",
-            "defaultValue": "2019-Datacenter",
+            "defaultValue": "2016-Datacenter",
             "allowedValues": [
+                "2016-Datacenter",
                 "2019-Datacenter"
             ],
             "metadata": {
@@ -149,7 +150,7 @@
         },
         "mxsRelease": {
             "type": "string",
-            "defaultValue": "MXS2019-x64-CU4-KB5000871",
+            "defaultValue": "MXS2016-x64-CU19-KB4588884",
             "allowedValues": [
                 "MXS2019-x64-CU4-KB5000871",
                 "MXS2019-x64-CU12-KB5011156",
