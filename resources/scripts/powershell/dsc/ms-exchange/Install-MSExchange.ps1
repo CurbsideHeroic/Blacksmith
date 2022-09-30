@@ -29,6 +29,7 @@ configuration Install-MSExchange
     # Set MS Exchange ISO File
     # Reference: https://docs.microsoft.com/en-us/exchange/new-features/build-numbers-and-release-dates?view=exchserver-2019&WT.mc_id=M365-MVP-5003086
     $MXSISOFile = Switch ($MXSRelease) {
+        'MXS2019-x64-CU4-KB5000871'  { 'Exchange2019-KB5000871-x64-en.msp'}
         'MXS2016-x64-CU19-KB4588884' { 'ExchangeServer2016-x64-CU19.ISO' }
         'MXS2016-x64-CU18-KB4571788' { 'ExchangeServer2016-x64-cu18.iso' }
         'MXS2016-x64-CU17-KB4556414' { 'ExchangeServer2016-x64-cu17.iso' }
